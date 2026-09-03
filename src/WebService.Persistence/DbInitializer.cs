@@ -1,6 +1,6 @@
-using Domain;
+using WebService.Domain;
 
-namespace Persistence;
+namespace WebService.Persistence;
 
 public static class DbInitializer
 {

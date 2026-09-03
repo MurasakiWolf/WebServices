@@ -1,7 +1,7 @@
-using Domain;
+using WebService.Domain;
 using Microsoft.EntityFrameworkCore;
 
-namespace Persistence;
+namespace WebService.Persistence;
 
 public class AppDbContext(DbContextOptions options) : DbContext (options)
 {

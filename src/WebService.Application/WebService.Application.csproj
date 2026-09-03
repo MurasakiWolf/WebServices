@@ -7,11 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Domain\Domain.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.11" />
+    <ProjectReference Include="..\WebService.Domain\WebService.Domain.csproj" />
+    <ProjectReference Include="..\WebService.Persistence\WebService.Persistence.csproj" />
   </ItemGroup>
 
 </Project>

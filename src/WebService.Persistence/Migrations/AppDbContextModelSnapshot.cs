@@ -2,25 +2,22 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Persistence;
+using WebService.Persistence;
 
 #nullable disable
 
-namespace Persistence.Migrations
+namespace WebService.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260826140730_InitialCreate")]
-    partial class InitialCreate
+    partial class AppDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.11");
 
-            modelBuilder.Entity("Domain.Event", b =>
+            modelBuilder.Entity("WebService.Domain.Event", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("TEXT");
