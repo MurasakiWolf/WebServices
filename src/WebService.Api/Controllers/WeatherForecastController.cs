@@ -2,9 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace WebService.Api.Controllers;
 
-[ApiController]
-[Route("[controller]")]
-public class WeatherForecastController : ControllerBase
+public class WeatherForecastController : BaseWebServiceController
 {
     private static readonly string[] Summaries =
     [
