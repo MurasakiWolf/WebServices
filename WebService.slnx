@@ -3,6 +3,7 @@
     <Project Path="src/WebService.Api/WebService.Api.csproj" />
     <Project Path="src/WebService.Application/WebService.Application.csproj" />
     <Project Path="src/WebService.Domain/WebService.Domain.csproj" />
+    <Project Path="src/WebService.OpenApi/WebService.OpenApi.csproj" />
     <Project Path="src/WebService.Persistence/WebService.Persistence.csproj" />
   </Folder>
 </Solution>
