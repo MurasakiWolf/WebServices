@@ -14,7 +14,7 @@ public class EventsController(AppDbContext context) : BaseWebServiceController
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<Event>> GetEventDetail(string id)
+    public async Task<ActionResult<Event>> GetEventDetailAsync(string id)
     {
         var result = await context.Events.FindAsync(id);
 

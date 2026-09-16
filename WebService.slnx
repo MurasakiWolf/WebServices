@@ -6,4 +6,7 @@
     <Project Path="src/WebService.OpenApi/WebService.OpenApi.csproj" />
     <Project Path="src/WebService.Persistence/WebService.Persistence.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/WebService.UnitTests/WebService.UnitTests.csproj" />
+  </Folder>
 </Solution>
