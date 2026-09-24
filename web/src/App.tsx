@@ -15,7 +15,7 @@ function App() {
 
   return (
     <>
-      <Typography variant="h3">Events Hub</Typography>
+      <Typography variant="h3">Web Services</Typography>
       <List>
         {activities.map((activity: Activity) => (
           <ListItem key={activity.id}>

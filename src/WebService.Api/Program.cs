@@ -1,5 +1,6 @@
-using Microsoft.EntityFrameworkCore;
 using WebService.Persistence;
+using Microsoft.EntityFrameworkCore;
+using WebService.Application.Events.Queries;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +11,9 @@ builder.Services.AddDbContext<AppDbContext>(opt =>
     opt.UseSqlite(builder.Configuration.GetConnectionString("SqliteConnection"));
 });
 builder.Services.AddCors();
+builder.Services.AddMediatR(opt =>
+opt.RegisterServicesFromAssemblyContaining<GetEventList.Handler>()
+);
 
 var app = builder.Build();
 
