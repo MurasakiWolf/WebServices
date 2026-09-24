@@ -5,17 +5,17 @@ using WebService.Application.Events.Queries;
 
 namespace WebService.Api.Controllers;
 
-public class EventsController(IMediator mediator) : BaseWebServiceController
+public class EventsController : WebServiceBaseController
 {
     [HttpGet]
     public async Task<ActionResult<IReadOnlyList<Event>>> GetEventsAsync()
     {
-        return await mediator.Send(new GetEventList.Query());
+        return await Mediator.Send(new GetEventList.Query());
     }
 
     [HttpGet("{id}")]
     public async Task<ActionResult<Event>> GetEventDetailAsync(string id)
     {
-        return await mediator.Send(new GetEventDetails.Query { Id = id });
+        return await Mediator.Send(new GetEventDetails.Query { Id = id });
     }
 }
