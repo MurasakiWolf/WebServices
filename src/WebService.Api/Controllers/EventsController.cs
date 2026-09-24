@@ -30,4 +30,14 @@ public class EventsController : WebServiceBaseController
     {
         return await Mediator.Send(new CreateEvent.Command { Event = @event });
     }
+
+    [HttpPut]
+    [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
+    public async Task<ActionResult> EditEventAsync(Event @event)
+    {
+        await Mediator.Send(new EditEvent.Command { Event = @event });
+        return NoContent();
+    }
 }
