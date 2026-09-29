@@ -1,26 +1,15 @@
 info:
-  name: Events - Create- 200
+  name: Events - Delete - 200
   type: http
-  seq: 4
+  seq: 6
 
 http:
-  method: POST
-  url: "{{url}}/events"
-  body:
-    type: json
-    data: |-
-      {
-        "id": "{{$guid}}",
-        "title": "{{$randomCatchPhrase}}",
-        "date": "{{$randomDateFuture}}",
-        "description": "{{$randomLoremParagraph}}",
-        "category": "music",
-        "isCancelled": false,
-        "city": "{{$randomCity}}",
-        "venue": "{{$randomStreetName}}",
-        "latitude": "19.6925",
-        "longitude": "-98.8438"
-      }
+  method: DELETE
+  url: "{{url}}/events/:EventId"
+  params:
+    - name: EventId
+      value: 2762e039-0f6c-462c-9252-2b15f6848f92
+      type: path
   auth: inherit
 
 runtime:

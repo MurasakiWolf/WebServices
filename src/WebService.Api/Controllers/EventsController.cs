@@ -40,4 +40,13 @@ public class EventsController : WebServiceBaseController
         await Mediator.Send(new EditEvent.Command { Event = @event });
         return NoContent();
     }
+
+    [HttpDelete]
+    [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
+    public async Task<ActionResult> DeleteEvent(string id)
+    {
+        await Mediator.Send(new DeleteEvent.Command { Id = id });
+        return Ok();
+    }
 }
