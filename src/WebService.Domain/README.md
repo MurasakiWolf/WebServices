@@ -1,4 +1,4 @@
-# EventsHub.Domain
+# WebService.Domain
 
 The innermost layer: plain entity classes, no framework dependencies (no EF
 Core, no ASP.NET references — just the `net10.0` BCL).
@@ -23,10 +23,10 @@ for the tradeoff that implies.
 Part of the solution; build via the root solution file:
 
 ```powershell
-dotnet build EventsHub.slnx
+dotnet build WebService.slnx
 ```
 
 No standalone run/test target — this project has no executable and no
 dedicated test project (it's exercised indirectly through
-`tests/EventsHub.UnitTests`, which tests `EventsHub.Api` against real
+`tests/WebService.UnitTests`, which tests `WebService.Api` against real
 `Event` data).

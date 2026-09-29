@@ -1,12 +1,12 @@
-# EventsHub.Persistence
+# WebService.Persistence
 
 The data-access layer: EF Core `DbContext`, migrations, and seed data.
-Depends only on `EventsHub.Domain`.
+Depends only on `WebService.Domain`.
 
 ## Contents
 
 - **`AppDbContext.cs`** — `DbSet<Event> Events`. Configured for SQLite
-  (`UseSqlite`) by whichever host wires it up (`EventsHub.Api`'s
+  (`UseSqlite`) by whichever host wires it up (`WebService.Api`'s
   `Program.cs`, or `GlobalTestSetup` in the unit tests) — this project
   itself only declares the `Microsoft.EntityFrameworkCore.Sqlite` package
   reference, it doesn't hardcode a connection string.
@@ -27,12 +27,12 @@ the `DbContext`) and `Api` as `-s` (the project with the connection string
 and `Microsoft.EntityFrameworkCore.Design` package):
 
 ```powershell
-dotnet ef migrations add <Name> -p src/EventsHub.Persistence -s src/EventsHub.Api
-dotnet ef database update -p src/EventsHub.Persistence -s src/EventsHub.Api
+dotnet ef migrations add <Name> -p src/WebService.Persistence -s src/WebService.Api
+dotnet ef database update -p src/WebService.Persistence -s src/WebService.Api
 ```
 
-Both `EventsHub.Api` (on every startup) and
-`tests/EventsHub.UnitTests` (once, in `GlobalTestSetup`) call
+Both `WebService.Api` (on every startup) and
+`tests/WebService.UnitTests` (once, in `GlobalTestSetup`) call
 `context.Database.MigrateAsync()` themselves — you generally don't need to
 run `database update` manually against those; it's mainly useful for
 inspecting the schema directly.

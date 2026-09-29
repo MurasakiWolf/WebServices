@@ -1,4 +1,4 @@
-# EventsHub Backend — Steps Followed
+# WebService Backend — Steps Followed
 
 > Reconstruction of how the backend under `src/` was built, from the empty
 > repository (`f0d9c80`) up to and including the OpenAPI + typed-client work
@@ -6,41 +6,41 @@
 >
 > Commands are written for **PowerShell** and are run from the **repository
 > root** (the folder containing the solution file). Where a commit only records
-> the *result* of a tool (an EF migration, an NSwag-generated file), the command
+> the _result_ of a tool (an EF migration, an NSwag-generated file), the command
 > that produces that result is given so the state can be reproduced.
 
 ---
 
 ## Commit map
 
-| # | Commit | Date | Summary | Touches `src/` |
-|---|--------|------|---------|:---:|
-| 0 | `f0d9c80` | 2026-08-24 | Initial commit — `.gitignore`, `README.md` only | — |
-| 1 | `20fb7d1` | 2026-08-24 | Add initial boilerplate (Clean Architecture skeleton) | ✅ |
-| 2 | `6a37ba7` | 2026-08-24 | Cleanup boilerplate | ✅ |
-| 3 | `a0a93ef` | 2026-08-25 | Add entity and EF boilerplate | ✅ |
-| 4 | `66494c6` | 2026-08-26 | Add first entity and initial migration | ✅ |
-| 5 | `668887e` | 2026-08-27 | Add DB initializer (seed data) | ✅ |
-| — | `d5a0b05`, `6bf43a3`, `d738e9d`, `425a70c` | 2026-08-27/28 | `OpenApi.md` design-doc drafts (`openapi v1/v2/v3`) | — |
-| 6 | `2fe4d9c` | 2026-08-28 | Rename solution, projects, folders and namespaces → **EventsHub** | ✅ |
-| 7 | `cc2e216` | 2026-08-28 | Add Events controller (+ shared base controller) | ✅ |
-| — | `cff6364`, `807bb12` | 2026-08-31 / 09-01 | Bruno integration tests (under `tests/`, not `src/`) | — |
-| 8 | `e416730` | 2026-09-02 | Add OpenAPI document host + NSwag RPC client generation | ✅ |
+| #   | Commit                                     | Date               | Summary                                                            | Touches `src/` |
+| --- | ------------------------------------------ | ------------------ | ------------------------------------------------------------------ | :------------: |
+| 0   | `f0d9c80`                                  | 2026-08-24         | Initial commit — `.gitignore`, `README.md` only                    |       —        |
+| 1   | `20fb7d1`                                  | 2026-08-24         | Add initial boilerplate (Clean Architecture skeleton)              |       ✅       |
+| 2   | `6a37ba7`                                  | 2026-08-24         | Cleanup boilerplate                                                |       ✅       |
+| 3   | `a0a93ef`                                  | 2026-08-25         | Add entity and EF boilerplate                                      |       ✅       |
+| 4   | `66494c6`                                  | 2026-08-26         | Add first entity and initial migration                             |       ✅       |
+| 5   | `668887e`                                  | 2026-08-27         | Add DB initializer (seed data)                                     |       ✅       |
+| —   | `d5a0b05`, `6bf43a3`, `d738e9d`, `425a70c` | 2026-08-27/28      | `OpenApi.md` design-doc drafts (`openapi v1/v2/v3`)                |       —        |
+| 6   | `2fe4d9c`                                  | 2026-08-28         | Rename solution, projects, folders and namespaces → **WebService** |       ✅       |
+| 7   | `cc2e216`                                  | 2026-08-28         | Add Events controller (+ shared base controller)                   |       ✅       |
+| —   | `cff6364`, `807bb12`                       | 2026-08-31 / 09-01 | Bruno integration tests (under `tests/`, not `src/`)               |       —        |
+| 8   | `e416730`                                  | 2026-09-02         | Add OpenAPI document host + NSwag RPC client generation            |       ✅       |
 
 Final project layout (after step 8):
 
 ```
-EventsHub.slnx
+WebService.slnx
 .config/dotnet-tools.json          # local NSwag CLI
 src/
-  EventsHub.Api/                   # ASP.NET Core Web API (controllers + EF + seeding)
-  EventsHub.Application/            # class library (placeholder, wired for references)
-  EventsHub.Domain/                # entities (Event)
-  EventsHub.Persistence/           # AppDbContext, migrations, DbInitializer
-  EventsHub.OpenApi/               # standalone host that serves the Swagger doc
-    Generated/EventsHubRpcClient.generated.cs   # generated (never hand-edited)
-  nswag/EventsHub.nswag             # checked-in codegen config
-  openapi/EventsHub.v1.json         # generated OpenAPI document (never hand-edited)
+  WebService.Api/                   # ASP.NET Core Web API (controllers + EF + seeding)
+  WebService.Application/            # class library (placeholder, wired for references)
+  WebService.Domain/                # entities (Event)
+  WebService.Persistence/           # AppDbContext, migrations, DbInitializer
+  WebService.OpenApi/               # standalone host that serves the Swagger doc
+    Generated/WebServiceRpcClient.generated.cs   # generated (never hand-edited)
+  nswag/WebService.nswag             # checked-in codegen config
+  openapi/WebService.v1.json         # generated OpenAPI document (never hand-edited)
 ```
 
 ---
@@ -49,7 +49,7 @@ src/
 
 Empty repository: only `.gitignore` (Visual Studio / .NET template) and a
 one-line `README.md` (`# ActivitiesHub` — the project was originally called
-*ActivitiesHub*; it is renamed to *EventsHub* in step 6).
+_ActivitiesHub_; it is renamed to _WebService_ in step 6).
 
 ---
 
@@ -87,9 +87,9 @@ Details captured in the commit:
   `/src/` solution folder.
 - `API` still contains the unmodified template output: `Program.cs` with
   `AddControllers()` + `AddOpenApi()` + `MapOpenApi()` + `UseHttpsRedirection()`
-  + `UseAuthorization()`, `Controllers/WeatherForecastController.cs`,
-  `WeatherForecast.cs`, `API.http`, a two-profile `launchSettings.json`, and
-  `appsettings*.json`.
+  - `UseAuthorization()`, `Controllers/WeatherForecastController.cs`,
+    `WeatherForecast.cs`, `API.http`, a two-profile `launchSettings.json`, and
+    `appsettings*.json`.
 - `Application`, `Domain`, `Persistence` each contain only a placeholder
   `Class1.cs`.
 
@@ -256,63 +256,63 @@ dotnet add src/API/API.csproj                 package Microsoft.EntityFrameworkC
 
 ---
 
-## Step 6 — Rebrand to EventsHub (`2fe4d9c`)
+## Step 6 — Rebrand to WebService (`2fe4d9c`)
 
-A pure rename pass: **ActivitiesHub → EventsHub** across the solution, projects,
+A pure rename pass: **ActivitiesHub → WebService** across the solution, projects,
 folders and namespaces. Nothing about behaviour changes.
 
-| Before | After |
-|--------|-------|
-| `ActivitiesHub.slnx` | `EventsHub.slnx` |
-| `src/API/` · `API.csproj` · namespace `API` | `src/EventsHub.Api/` · `EventsHub.Api.csproj` · namespace `EventsHub.Api` |
-| `src/Application/` · `Application.csproj` | `src/EventsHub.Application/` · `EventsHub.Application.csproj` |
-| `src/Domain/` · `Domain.csproj` · namespace `Domain` | `src/EventsHub.Domain/` · `EventsHub.Domain.csproj` · namespace `EventsHub.Domain` |
-| `src/Persistence/` · `Persistence.csproj` · namespace `Persistence` | `src/EventsHub.Persistence/` · `EventsHub.Persistence.csproj` · namespace `EventsHub.Persistence` |
+| Before                                                              | After                                                                                                |
+| ------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `ActivitiesHub.slnx`                                                | `WebService.slnx`                                                                                    |
+| `src/API/` · `API.csproj` · namespace `API`                         | `src/WebService.Api/` · `WebService.Api.csproj` · namespace `WebService.Api`                         |
+| `src/Application/` · `Application.csproj`                           | `src/WebService.Application/` · `WebService.Application.csproj`                                      |
+| `src/Domain/` · `Domain.csproj` · namespace `Domain`                | `src/WebService.Domain/` · `WebService.Domain.csproj` · namespace `WebService.Domain`                |
+| `src/Persistence/` · `Persistence.csproj` · namespace `Persistence` | `src/WebService.Persistence/` · `WebService.Persistence.csproj` · namespace `WebService.Persistence` |
 
 Also in this commit:
 
 - Every `ProjectReference` repointed to the new paths; every `.slnx` entry
   updated.
 - Migration re-created under the new namespace
-  (`EventsHub.Persistence.Migrations`, entity key `EventsHub.Domain.Event`) and
+  (`WebService.Persistence.Migrations`, entity key `WebService.Domain.Event`) and
   re-timestamped `20260828131904_InitialCreate`.
-- Connection string database file → `Data source=eventshub.db`.
-- `README.md` → `# EventsHub`.
+- Connection string database file → `Data source=WebService.db`.
+- `README.md` → `# WebService`.
 - Removed the leftover `Application/Class1.cs` and an unused
   `using System.ComponentModel.DataAnnotations;` in `Event.cs`.
 
 Reproduce with (rough equivalent):
 
 ```powershell
-Rename-Item ActivitiesHub.slnx EventsHub.slnx
-Rename-Item src/API          src/EventsHub.Api
-Rename-Item src/Application   src/EventsHub.Application
-Rename-Item src/Domain       src/EventsHub.Domain
-Rename-Item src/Persistence  src/EventsHub.Persistence
+Rename-Item ActivitiesHub.slnx WebService.slnx
+Rename-Item src/API          src/WebService.Api
+Rename-Item src/Application   src/WebService.Application
+Rename-Item src/Domain       src/WebService.Domain
+Rename-Item src/Persistence  src/WebService.Persistence
 # rename each .csproj, fix namespaces + ProjectReferences + .slnx paths,
 # then regenerate the migration:
-dotnet ef migrations remove -p src/EventsHub.Persistence -s src/EventsHub.Api
-dotnet ef migrations add InitialCreate -p src/EventsHub.Persistence -s src/EventsHub.Api
+dotnet ef migrations remove -p src/WebService.Persistence -s src/WebService.Api
+dotnet ef migrations add InitialCreate -p src/WebService.Persistence -s src/WebService.Api
 ```
 
 ---
 
 ## Step 7 — Events controller (`cc2e216`)
 
-- `src/EventsHub.Api/Controllers/EventsHubBaseController.cs` — shared base with
+- `src/WebService.Api/Controllers/WebServiceBaseController.cs` — shared base with
   the API route convention:
 
   ```csharp
   [Route("api/v1/[controller]")]
   [ApiController]
-  public class EventsHubBaseController : ControllerBase { }
+  public class WebServiceBaseController : ControllerBase { }
   ```
 
-- `src/EventsHub.Api/Controllers/EventsController.cs` — the real endpoint,
+- `src/WebService.Api/Controllers/EventsController.cs` — the real endpoint,
   injecting `AppDbContext` directly:
 
   ```csharp
-  public class EventsController(AppDbContext context) : EventsHubBaseController
+  public class EventsController(AppDbContext context) : WebServiceBaseController
   {
       [HttpGet]
       public async Task<ActionResult<IReadOnlyList<Event>>> GetEventsAsync()
@@ -328,7 +328,7 @@ dotnet ef migrations add InitialCreate -p src/EventsHub.Persistence -s src/Event
   }
   ```
 
-- `WeatherForecastController` is re-parented onto `EventsHubBaseController`
+- `WeatherForecastController` is re-parented onto `WebServiceBaseController`
   (drops its own `[ApiController]` / `[Route("[controller]")]`), so it now
   answers at `api/v1/WeatherForecast`.
 
@@ -346,22 +346,22 @@ turns that document into a typed C# client.
 ### 8a. Standalone doc-generation host
 
 ```powershell
-dotnet new web -n EventsHub.OpenApi -o src/EventsHub.OpenApi
-dotnet sln EventsHub.slnx add src/EventsHub.OpenApi/EventsHub.OpenApi.csproj --solution-folder src
+dotnet new web -n WebService.OpenApi -o src/WebService.OpenApi
+dotnet sln WebService.slnx add src/WebService.OpenApi/WebService.OpenApi.csproj --solution-folder src
 
-dotnet add src/EventsHub.OpenApi/EventsHub.OpenApi.csproj reference src/EventsHub.Api/EventsHub.Api.csproj
-dotnet add src/EventsHub.OpenApi/EventsHub.OpenApi.csproj package NSwag.AspNetCore                   --version 14.7.1
-dotnet add src/EventsHub.OpenApi/EventsHub.OpenApi.csproj package Microsoft.AspNetCore.Mvc.NewtonsoftJson --version 10.0.11
-dotnet add src/EventsHub.OpenApi/EventsHub.OpenApi.csproj package Newtonsoft.Json                    --version 13.0.4
-dotnet add src/EventsHub.OpenApi/EventsHub.OpenApi.csproj package Moq                                --version 4.20.72
+dotnet add src/WebService.OpenApi/WebService.OpenApi.csproj reference src/WebService.Api/WebService.Api.csproj
+dotnet add src/WebService.OpenApi/WebService.OpenApi.csproj package NSwag.AspNetCore                   --version 14.7.1
+dotnet add src/WebService.OpenApi/WebService.OpenApi.csproj package Microsoft.AspNetCore.Mvc.NewtonsoftJson --version 10.0.11
+dotnet add src/WebService.OpenApi/WebService.OpenApi.csproj package Newtonsoft.Json                    --version 13.0.4
+dotnet add src/WebService.OpenApi/WebService.OpenApi.csproj package Moq                                --version 4.20.72
 ```
 
-`src/EventsHub.OpenApi/Program.cs` — registers the NSwag document, loads the
-`EventsHub.Api` assembly as an MVC application part, and serves the doc + UI:
+`src/WebService.OpenApi/Program.cs` — registers the NSwag document, loads the
+`WebService.Api` assembly as an MVC application part, and serves the doc + UI:
 
 ```csharp
 using System.Reflection;
-using EventsHub.Api.Controllers;
+using WebService.Api.Controllers;
 using Newtonsoft.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -369,8 +369,8 @@ var services = builder.Services;
 
 services.AddOpenApiDocument(document =>
 {
-    document.DocumentName = "EventsHub";
-    document.Title = "EventsHubV1";
+    document.DocumentName = "WebService";
+    document.Title = "WebServiceV1";
     document.Version = "1.0.0";
     document.DefaultResponseReferenceTypeNullHandling =
         NJsonSchema.Generation.ReferenceTypeNullHandling.NotNull;
@@ -392,11 +392,11 @@ app.MapControllers();
 app.Run();
 ```
 
-`src/EventsHub.OpenApi/Properties/launchSettings.json` uses a free port pair
+`src/WebService.OpenApi/Properties/launchSettings.json` uses a free port pair
 (`https://localhost:5011;http://localhost:5010`) so it doesn't collide with the
 main API on `5001`.
 
-> `typeof(Program)` cannot be used for the assembly handle — EventsHub's
+> `typeof(Program)` cannot be used for the assembly handle — WebService's
 > `Program` is an internal top-level class in the global namespace. A public type
 > such as `WeatherForecastController` is referenced instead.
 
@@ -411,13 +411,15 @@ Produces `.config/dotnet-tools.json` with the `nswag` command.
 
 ### 8c. Codegen config
 
-`src/nswag/EventsHub.nswag` (hand-authored, checked in). Input is the
+`src/nswag/WebService.nswag` (hand-authored, checked in). Input is the
 not-yet-generated document; output is the `Generated/` folder:
 
 ```json
 {
   "runtime": "Net100",
-  "documentGenerator": { "fromDocument": { "url": "../openapi/EventsHub.v1.json" } },
+  "documentGenerator": {
+    "fromDocument": { "url": "../openapi/WebService.v1.json" }
+  },
   "codeGenerators": {
     "openApiToCSharpClient": {
       "generateClientClasses": true,
@@ -426,9 +428,9 @@ not-yet-generated document; output is the `Generated/` folder:
       "exceptionClass": "ApiException",
       "className": "{controller}RpcClient",
       "operationGenerationMode": "MultipleClientsFromOperationId",
-      "namespace": "EventsHub.OpenApi.Client",
+      "namespace": "WebService.OpenApi.Client",
       "jsonLibrary": "NewtonsoftJson",
-      "output": "../src/EventsHub.OpenApi/Generated/EventsHubRpcClient.generated.cs"
+      "output": "../src/WebService.OpenApi/Generated/WebServiceRpcClient.generated.cs"
     }
   }
 }
@@ -438,29 +440,29 @@ not-yet-generated document; output is the `Generated/` folder:
 
 ```powershell
 # 1. start the host
-dotnet run --project src/EventsHub.OpenApi/EventsHub.OpenApi.csproj --no-launch-profile --urls http://127.0.0.1:5011
+dotnet run --project src/WebService.OpenApi/WebService.OpenApi.csproj --no-launch-profile --urls http://127.0.0.1:5011
 
 # 2. fetch the document (separate terminal)
-Invoke-WebRequest -Uri http://127.0.0.1:5011/swagger/EventsHub/swagger.json -OutFile src/openapi/EventsHub.v1.json
+Invoke-WebRequest -Uri http://127.0.0.1:5011/swagger/WebService/swagger.json -OutFile src/openapi/WebService.v1.json
 
 # 3. stop the host
-Get-Process -Name "EventsHub.OpenApi" | Stop-Process -Force
+Get-Process -Name "WebService.OpenApi" | Stop-Process -Force
 
 # 4. generate the client
-dotnet tool run nswag run src/nswag/EventsHub.nswag
+dotnet tool run nswag run src/nswag/WebService.nswag
 
 # 5. confirm everything compiles
-dotnet build EventsHub.slnx
+dotnet build WebService.slnx
 ```
 
 Committed generated output:
 
-- `src/openapi/EventsHub.v1.json` — OpenAPI 3.0 doc; paths `/api/v1/Events`,
+- `src/openapi/WebService.v1.json` — OpenAPI 3.0 doc; paths `/api/v1/Events`,
   `/api/v1/Events/{id}`, `/api/v1/WeatherForecast`, plus the `Event` schema.
-- `src/EventsHub.OpenApi/Generated/EventsHubRpcClient.generated.cs` (~774 lines)
+- `src/WebService.OpenApi/Generated/WebServiceRpcClient.generated.cs` (~774 lines)
   — `EventsRpcClient` / `WeatherForecastRpcClient` with their interfaces, an
   `ApiException` hierarchy, and the `Event` DTO, all in namespace
-  `EventsHub.OpenApi.Client`.
+  `WebService.OpenApi.Client`.
 
 Both files are **generated** — never hand-edited; re-run steps 8d.1–8d.4 to
 refresh them.
@@ -472,10 +474,10 @@ Also added in this commit: `.vscode/settings.json`, and the design doc moved to
 
 ## What is generated vs. hand-maintained
 
-| Path | Origin | Maintenance |
-|------|--------|-------------|
-| `src/EventsHub.*/**/*.cs` (non-migration), `*.csproj`, `Program.cs` | Hand-written | Edit directly |
-| `src/EventsHub.Persistence/Migrations/**` | `dotnet ef migrations add` | Regenerate; don't hand-edit |
-| `src/nswag/EventsHub.nswag` | Hand-authored | Edit for codegen config changes only |
-| `src/openapi/EventsHub.v1.json` | NSwag (pipeline 8d.2) | **Never hand-edit** |
-| `src/EventsHub.OpenApi/Generated/*.generated.cs` | NSwag (pipeline 8d.4) | **Never hand-edit** |
+| Path                                                                 | Origin                     | Maintenance                          |
+| -------------------------------------------------------------------- | -------------------------- | ------------------------------------ |
+| `src/WebService.*/**/*.cs` (non-migration), `*.csproj`, `Program.cs` | Hand-written               | Edit directly                        |
+| `src/WebService.Persistence/Migrations/**`                           | `dotnet ef migrations add` | Regenerate; don't hand-edit          |
+| `src/nswag/WebService.nswag`                                         | Hand-authored              | Edit for codegen config changes only |
+| `src/openapi/WebService.v1.json`                                     | NSwag (pipeline 8d.2)      | **Never hand-edit**                  |
+| `src/WebService.OpenApi/Generated/*.generated.cs`                    | NSwag (pipeline 8d.4)      | **Never hand-edit**                  |

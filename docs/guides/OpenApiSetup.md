@@ -1,45 +1,45 @@
-# Manual setup — OpenAPI doc generation + typed client for the EventsHub API
+# Manual setup — OpenAPI doc generation + typed client for the WebService API
 
-This is the full procedure for standing up OpenAPI support for the EventsHub
-backend: a standalone doc-generation host (`EventsHub.OpenApi`), an NSwag
+This is the full procedure for standing up OpenAPI support for the WebService
+backend: a standalone doc-generation host (`WebService.OpenApi`), an NSwag
 codegen config (`nswag/`), and the generated OpenAPI document (`openapi/`).
 
 It is a two-part process: **(1) scaffold the pieces by hand**, then **(2) run the
 generation pipeline** to populate the generated content.
 
 All paths below are relative to the **repository root** (the folder containing
-`EventsHub.slnx`). The existing backend projects live under `src/`.
+`WebService.slnx`). The existing backend projects live under `src/`.
 
 Repo layout produced by this procedure:
 
-| Path | Purpose |
-|---|---|
-| `src/EventsHub.OpenApi/` | Standalone host that serves the live Swagger doc/UI |
-| `nswag/EventsHub.nswag` | Checked-in NSwag codegen config |
-| `openapi/EventsHub.v1.json` | Generated OpenAPI document (never hand-edited) |
-| `src/EventsHub.OpenApi/Generated/EventsHubRpcClient.generated.cs` | Generated C# client (never hand-edited) |
+| Path                                                                | Purpose                                             |
+| ------------------------------------------------------------------- | --------------------------------------------------- |
+| `src/WebService.OpenApi/`                                           | Standalone host that serves the live Swagger doc/UI |
+| `nswag/WebService.nswag`                                            | Checked-in NSwag codegen config                     |
+| `openapi/WebService.v1.json`                                        | Generated OpenAPI document (never hand-edited)      |
+| `src/WebService.OpenApi/Generated/WebServiceRpcClient.generated.cs` | Generated C# client (never hand-edited)             |
 
 ---
 
 ## Part 1 — Manually scaffold the pieces
 
-### Step 1: Create `src/EventsHub.OpenApi/` (the standalone doc-generation host)
+### Step 1: Create `src/WebService.OpenApi/` (the standalone doc-generation host)
 
 Run from the repo root:
 
 ```powershell
-dotnet new web -n EventsHub.OpenApi -o src/EventsHub.OpenApi
-dotnet sln EventsHub.slnx add src/EventsHub.OpenApi/EventsHub.OpenApi.csproj --solution-folder src
+dotnet new web -n WebService.OpenApi -o src/WebService.OpenApi
+dotnet sln WebService.slnx add src/WebService.OpenApi/WebService.OpenApi.csproj --solution-folder src
 ```
 
-> Note: `EventsHub.slnx` currently lists only `EventsHub.Api`,
-> `EventsHub.Application`, `EventsHub.Domain`, and `EventsHub.Persistence` (all
-> under the `/src/` solution folder). Adding `EventsHub.OpenApi` to the
+> Note: `WebService.slnx` currently lists only `WebService.Api`,
+> `WebService.Application`, `WebService.Domain`, and `WebService.Persistence` (all
+> under the `/src/` solution folder). Adding `WebService.OpenApi` to the
 > solution is optional — the pipeline in Part 2 targets the `.csproj` directly —
 > but keeping it in the solution makes it build with
-> `dotnet build EventsHub.slnx`.
+> `dotnet build WebService.slnx`.
 
-Then edit `src/EventsHub.OpenApi/EventsHub.OpenApi.csproj` to match this
+Then edit `src/WebService.OpenApi/WebService.OpenApi.csproj` to match this
 shape:
 
 ```xml
@@ -59,13 +59,13 @@ shape:
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\EventsHub.Api\EventsHub.Api.csproj" />
+    <ProjectReference Include="..\WebService.Api\WebService.Api.csproj" />
   </ItemGroup>
 
 </Project>
 ```
 
-- `ProjectReference` to `EventsHub.Api` is what lets this host discover the real
+- `ProjectReference` to `WebService.Api` is what lets this host discover the real
   controllers (`WeatherForecastController`, and whatever you add later) via an
   MVC application part.
 - `NSwag.AspNetCore` serves the live Swagger doc/UI.
@@ -78,9 +78,9 @@ Then replace `Program.cs` with a minimal host that:
 
 1. Registers `AddOpenApiDocument(...)` with a fixed `DocumentName` / `Title` /
    `Version`.
-2. Loads the `EventsHub.Api` assembly and adds it as an MVC application part with
+2. Loads the `WebService.Api` assembly and adds it as an MVC application part with
    `AddControllersAsServices()`.
-3. Registers any controller-constructor dependencies. The current EventsHub
+3. Registers any controller-constructor dependencies. The current WebService
    controllers take no constructor parameters, so **no mocks are required
    today**. Only add `services.AddSingleton(new Mock<INewService>().Object);`
    lines if a future controller takes real constructor parameters (or resolve
@@ -88,14 +88,14 @@ Then replace `Program.cs` with a minimal host that:
    as is common once MediatR is introduced).
 4. Calls `app.UseOpenApi()` / `app.UseSwaggerUi()` / `app.MapControllers()`.
 
-Note on the assembly handle: EventsHub's `Program` is an implicit top-level class
+Note on the assembly handle: WebService's `Program` is an implicit top-level class
 in the global namespace and is `internal`, so `typeof(Program)` is not usable
-from this project. Reference any **public** type from the `EventsHub.Api`
+from this project. Reference any **public** type from the `WebService.Api`
 assembly instead — a controller works:
 
 ```csharp
 using System.Reflection;
-using EventsHub.Api.Controllers;
+using WebService.Api.Controllers;
 using Newtonsoft.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -104,8 +104,8 @@ var services = builder.Services;
 services
     .AddOpenApiDocument(document =>
     {
-        document.DocumentName = "EventsHub";
-        document.Title = "EventsHubV1"; // Official interface name. No spaces. PascalCase.
+        document.DocumentName = "WebService";
+        document.Title = "WebServiceV1"; // Official interface name. No spaces. PascalCase.
         document.Version = "1.0.0";
         document.DefaultResponseReferenceTypeNullHandling =
             NJsonSchema.Generation.ReferenceTypeNullHandling.NotNull;
@@ -128,17 +128,17 @@ app.MapControllers();
 app.Run();
 ```
 
-> The `DocumentName` ("EventsHub") is what forms the Swagger JSON URL in
-> Part 2: `/swagger/EventsHub/swagger.json`.
+> The `DocumentName` ("WebService") is what forms the Swagger JSON URL in
+> Part 2: `/swagger/WebService/swagger.json`.
 
-Finally, set `src/EventsHub.OpenApi/Properties/launchSettings.json` to this
+Finally, set `src/WebService.OpenApi/Properties/launchSettings.json` to this
 project's name and a free port pair (the main API uses `https://localhost:5001`):
 
 ```json
 {
   "$schema": "https://json.schemastore.org/launchsettings.json",
   "profiles": {
-    "EventsHub.OpenApi": {
+    "WebService.OpenApi": {
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {
@@ -156,18 +156,18 @@ project's name and a free port pair (the main API uses `https://localhost:5001`)
 mkdir openapi
 ```
 
-Leave it empty — `EventsHub.v1.json` is pure generated output (Part 2) and must
+Leave it empty — `WebService.v1.json` is pure generated output (Part 2) and must
 never be hand-authored.
 
-### Step 3: Create `nswag/EventsHub.nswag` (checked-in codegen config)
+### Step 3: Create `nswag/WebService.nswag` (checked-in codegen config)
 
 ```powershell
 mkdir nswag
 ```
 
 This file **is** hand-authored / checked in (unlike the JSON doc or the
-generated `.cs`). Create `nswag/EventsHub.nswag` pointing at the not-yet-existing
-OpenAPI doc as input and the `src/EventsHub.OpenApi/Generated/` folder as
+generated `.cs`). Create `nswag/WebService.nswag` pointing at the not-yet-existing
+OpenAPI doc as input and the `src/WebService.OpenApi/Generated/` folder as
 output (paths are relative to the `nswag/` folder):
 
 ```json
@@ -175,7 +175,7 @@ output (paths are relative to the `nswag/` folder):
   "runtime": "Net100",
   "documentGenerator": {
     "fromDocument": {
-      "url": "../openapi/EventsHub.v1.json"
+      "url": "../openapi/WebService.v1.json"
     }
   },
   "codeGenerators": {
@@ -186,9 +186,9 @@ output (paths are relative to the `nswag/` folder):
       "exceptionClass": "ApiException",
       "className": "{controller}RpcClient",
       "operationGenerationMode": "MultipleClientsFromOperationId",
-      "namespace": "EventsHub.OpenApi.Client",
+      "namespace": "WebService.OpenApi.Client",
       "jsonLibrary": "NewtonsoftJson",
-      "output": "../src/EventsHub.OpenApi/Generated/EventsHubRpcClient.generated.cs"
+      "output": "../src/WebService.OpenApi/Generated/WebServiceRpcClient.generated.cs"
     }
   }
 }
@@ -227,7 +227,7 @@ Run from the repo root.
 1. **Start the host** (separate terminal, or background it):
 
 ```powershell
-dotnet run --project src/EventsHub.OpenApi/EventsHub.OpenApi.csproj --no-launch-profile --urls http://127.0.0.1:5011
+dotnet run --project src/WebService.OpenApi/WebService.OpenApi.csproj --no-launch-profile --urls http://127.0.0.1:5011
 ```
 
 Wait for `Now listening on: http://127.0.0.1:5011`.
@@ -235,19 +235,19 @@ Wait for `Now listening on: http://127.0.0.1:5011`.
 2. **Fetch the document into the `openapi/` folder:**
 
 ```powershell
-Invoke-WebRequest -Uri http://127.0.0.1:5011/swagger/EventsHub/swagger.json -OutFile src/openapi/EventsHub.v1.json
+Invoke-WebRequest -Uri http://127.0.0.1:5011/swagger/WebService/swagger.json -OutFile src/openapi/WebService.v1.json
 ```
 
 3. **Stop the host** (so it doesn't lock its own `.exe` during the rebuild):
 
 ```powershell
-Get-Process -Name "EventsHub.OpenApi" | Stop-Process -Force
+Get-Process -Name "WebService.OpenApi" | Stop-Process -Force
 ```
 
-4. **Generate the C# client** from that JSON, using `nswag/EventsHub.nswag`:
+4. **Generate the C# client** from that JSON, using `nswag/WebService.nswag`:
 
 ```powershell
-dotnet tool run nswag run src/nswag/EventsHub.nswag
+dotnet tool run nswag run src/nswag/WebService.nswag
 ```
 
 If `dotnet tool run nswag` reports the tool isn't available even after `dotnet tool restore`, invoke the NSwag console DLL directly instead:
@@ -257,39 +257,39 @@ dotnet "$env:NUGET_PACKAGES\nswag.consolecore\14.7.1\tools\net10.0\any\dotnet-ns
 ```
 
 This writes
-`src/EventsHub.OpenApi/Generated/EventsHubRpcClient.generated.cs`.
+`src/WebService.OpenApi/Generated/WebServiceRpcClient.generated.cs`.
 
 5. **Rebuild the solution to confirm everything compiles:**
 
 ```powershell
-dotnet build EventsHub.slnx
+dotnet build WebService.slnx
 ```
 
 ---
 
 ## Summary of what gets created vs. hand-maintained
 
-| Path | Origin | Maintenance |
-|---|---|---|
-| `src/EventsHub.OpenApi/*.csproj`, `Program.cs`, `launchSettings.json` | Manual (Part 1) | Hand-edit when adding new controller dependencies to register |
-| `nswag/EventsHub.nswag` | Manual (Part 1) | Hand-edit only for codegen config changes (e.g. runtime bump) |
-| `openapi/EventsHub.v1.json` | Generated (Part 2, step 2) | **Never hand-edit** — overwritten by the pipeline |
-| `src/EventsHub.OpenApi/Generated/*.generated.cs` | Generated (Part 2, step 4) | **Never hand-edit** — overwritten by the pipeline |
+| Path                                                                   | Origin                     | Maintenance                                                   |
+| ---------------------------------------------------------------------- | -------------------------- | ------------------------------------------------------------- |
+| `src/WebService.OpenApi/*.csproj`, `Program.cs`, `launchSettings.json` | Manual (Part 1)            | Hand-edit when adding new controller dependencies to register |
+| `nswag/WebService.nswag`                                               | Manual (Part 1)            | Hand-edit only for codegen config changes (e.g. runtime bump) |
+| `openapi/WebService.v1.json`                                           | Generated (Part 2, step 2) | **Never hand-edit** — overwritten by the pipeline             |
+| `src/WebService.OpenApi/Generated/*.generated.cs`                      | Generated (Part 2, step 4) | **Never hand-edit** — overwritten by the pipeline             |
 
 ---
 
 ## Current state on this branch
 
-None of the pieces exist yet — `src/EventsHub.OpenApi/`, `nswag/`,
+None of the pieces exist yet — `src/WebService.OpenApi/`, `nswag/`,
 `openapi/`, and `.config/dotnet-tools.json` are all absent. Start from Part 1,
 Step 1 and work straight through.
 
-When wiring `Program.cs`, remember EventsHub's differences from a typical
+When wiring `Program.cs`, remember WebService's differences from a typical
 Clean-Architecture template:
 
 - The API's `Program` class is an internal top-level program in the global
   namespace — use `Assembly.GetAssembly(typeof(WeatherForecastController))` (or
-  any other public `EventsHub.Api` type), not `typeof(Program)`.
+  any other public `WebService.Api` type), not `typeof(Program)`.
 - There is no `BaseApiController` and no MediatR yet, so no `IMediator`
   registration or mocks are needed. Revisit Step 2's dependency-registration
   guidance once controllers gain constructor parameters.
