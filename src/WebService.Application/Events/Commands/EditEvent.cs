@@ -1,4 +1,4 @@
-using AutoMapper;
+using WebService.Application.Core.Mapping;
 using MediatR;
 using WebService.Domain;
 using WebService.Persistence;

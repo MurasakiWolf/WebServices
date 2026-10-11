@@ -1,4 +1,4 @@
-# Prompt: Install Graphify + OpenSpec in EventsHub
+# Prompt: Install Graphify + OpenSpec in WebService
 
 Copy everything below the line into a fresh AI agent session (or follow it
 yourself step by step). It is self-contained — the agent doesn't need any
@@ -6,8 +6,8 @@ other context from this repo's history.
 
 ---
 
-You are working in the `EventsHub` repository (repo root =
-`c:\sources\uaa\2026\EventsHub`, a Windows machine, PowerShell as the primary
+You are working in the `WebService` repository (repo root =
+`c:\sources\uaa\2026\WebService`, a Windows machine, PowerShell as the primary
 shell). It's a two-app repo: a .NET 10 backend under `src/`/`tests/`, and a
 React + TypeScript + Vite frontend under `web/`. Your task is to install two
 developer-tooling packages into this repo and verify both work:
@@ -72,11 +72,11 @@ web/node_modules/
 web/dist/
 **/bin/
 **/obj/
-src/EventsHub.OpenApi/Generated/
+src/WebService.OpenApi/Generated/
 src/openapi/
 ```
 
-(`src/EventsHub.OpenApi/Generated/` and `src/openapi/` are NSwag-generated —
+(`src/WebService.OpenApi/Generated/` and `src/openapi/` are NSwag-generated —
 see `docs/Architecture.md` — not worth graphing as "real" code.)
 
 ### Build the graph
@@ -156,6 +156,7 @@ openspec init --tools claude
 ```
 
 This creates:
+
 - `openspec/specs/` — the current, agreed specs
 - `openspec/changes/archive/` — completed change proposals, archived
 - `.claude/skills/openspec-*/SKILL.md` — one skill file per OpenSpec
@@ -184,6 +185,7 @@ Claude Code session.
 ## Step 3 — Report back
 
 Once both are installed, summarize:
+
 - Graphify and OpenSpec CLI versions (`graphify --version`, `openspec --version`)
 - Whether `graphify-out/graph.html` renders a real graph of this repo
 - Whether `graphify hook status` shows the post-commit/post-checkout hooks installed
@@ -198,21 +200,21 @@ Once both are installed, summarize:
 - Both tools are installed **globally** on the machine running them — every
   contributor who wants to use `/graphify` or the OpenSpec workflow needs to
   run Step 1/Step 2's install commands themselves once. Only the
-  *initialized, repo-scoped* output (`graphify-out/`, `.graphifyignore`,
+  _initialized, repo-scoped_ output (`graphify-out/`, `.graphifyignore`,
   `openspec/`, `.claude/skills/...`) is meant to be committed.
 - `graphify hook install` writes to `.git/hooks/`, which git never tracks —
   so the auto-rebuild-on-commit behavior is also per-machine. Each
   contributor who wants commits/checkouts to auto-refresh the graph needs to
   run `graphify hook install` themselves; there's no way to ship that setup
   via a committed file the way `.graphifyignore` can be.
-- Neither tool touches `EventsHub.slnx`, any `.csproj`, or `web/package.json`
+- Neither tool touches `WebService.slnx`, any `.csproj`, or `web/package.json`
   — if a future agent run proposes editing those to "add" Graphify/OpenSpec,
   that's a sign it misunderstood the install model above.
 - `openspec update` regenerates the tool-specific config files after an
   OpenSpec version bump; re-run it after upgrading the CLI.
 
 [Environment]::SetEnvironmentVariable(
-  "Path",
-  $env:Path + ";C:\Users\<username>\AppData\Roaming\Python\Python3xx\Scripts",
-  "User"
+"Path",
+$env:Path + ";C:\Users\<username>\AppData\Roaming\Python\Python3xx\Scripts",
+"User"
 )

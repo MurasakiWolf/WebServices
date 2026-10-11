@@ -13,7 +13,10 @@ WebService is a school project (ICI 2026 01): a .NET 10 backend (Clean Architect
 ```powershell
 dotnet build WebService.slnx                 # build everything
 dotnet run --project src/WebService.Api      # run the API (https://localhost:5001)
-dotnet test tests/WebService.UnitTests       # run all unit tests
+
+dotnet test tests/WebService.Application.UnitTests  # mapper tests (no database, no HTTP)
+dotnet test tests/WebService.UnitTests       # controller tests — currently does NOT compile (WebServiceTests still calls new EventsController(AppDbContext))
+
 dotnet test tests/WebService.UnitTests --filter "FullyQualifiedName~EventsControllerTests"  # single fixture
 dotnet test tests/WebService.UnitTests --filter "Name=GetEventDetailAsync_WhenEventDoesntExist_ReturnsNotFound"  # single test
 ```

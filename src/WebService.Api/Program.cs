@@ -2,6 +2,7 @@ using WebService.Persistence;
 using Microsoft.EntityFrameworkCore;
 using WebService.Application.Events.Queries;
 using WebService.Application.Core;
+using WebService.Application.Core.Mapping;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,7 +16,7 @@ builder.Services.AddCors();
 builder.Services.AddMediatR(opt =>
 opt.RegisterServicesFromAssemblyContaining<GetEventList.Handler>()
 );
-builder.Services.AddAutoMapper(typeof(MappingProfiles).Assembly);
+builder.Services.AddMapper(typeof(MappingProfiles).Assembly);
 
 var app = builder.Build();
 
