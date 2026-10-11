@@ -15,7 +15,7 @@ export default function NavBar() {
                             </MenuItem>
                         </MenuList>
                         <MenuList disablePadding sx={{ display: "flex" }}>
-                            <MenuItem sx={{ fontSize: "1.2rem", textTransform: "uppercase" }}>Event</MenuItem>
+                            <MenuItem sx={{ fontSize: "1.2rem", textTransform: "uppercase" }}>Activities</MenuItem>
                             <MenuItem sx={{ fontSize: "1.2rem", textTransform: "uppercase" }}>About</MenuItem>
                             <MenuItem sx={{ fontSize: "1.2rem", textTransform: "uppercase" }}>Contact</MenuItem>
                         </MenuList>
