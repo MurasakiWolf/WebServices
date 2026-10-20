@@ -1,4 +1,5 @@
 import { Box, Button, Paper, TextField, Typography } from "@mui/material";
+import type { FormEvent } from "react";
 
 type Props = {
     activity?: Activity
@@ -6,21 +7,29 @@ type Props = {
 }
 
 export default function ActivityForm({ activity, closeForm }: Props) {
+    const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        const formData = new FormData(event.currentTarget);
+        const data: { [key: string]: FormDataEntryValue } = {};
+        formData.forEach((value, key) => {
+            data[key] = value;
+        })
+    }
     return (
         <Paper sx={{ borderRadius: 3, padding: 3 }}>
             <Typography variant="h5" gutterBottom color="primary">
                 Create activity
             </Typography>
-            <Box component="form" sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-                <TextField label="Title" value={activity?.title}></TextField>
-                <TextField label="Description" multiline rows={3}></TextField>
-                <TextField label="Category"></TextField>
-                <TextField label="" type="date"></TextField>
-                <TextField label="City"></TextField>
-                <TextField label="Venue"></TextField>
+            <Box component="form" onSubmit={handleSubmit} sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
+                <TextField name="title" label="Title" value={activity?.title}></TextField>
+                <TextField name="description" label="Description" value={activity?.description} multiline rows={3}></TextField>
+                <TextField name="category" label="Category" value={activity?.category}></TextField>
+                <TextField name="date" label="" value={activity?.date} type="date"></TextField>
+                <TextField name="city" label="City" value={activity?.city}></TextField>
+                <TextField name="venue" label="Venue" value={activity?.venue}></TextField>
                 <Box sx={{ display: "flex", justifyContent: "end", gap: 3 }}>
                     <Button onClick={closeForm} color="inherit">Cancel</Button>
-                    <Button color="success">Submit</Button>
+                    <Button color="success" variant="contained" type="submited">Submit</Button>
                 </Box>
 
             </Box>
