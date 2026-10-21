@@ -8,14 +8,14 @@ Pick **one** part below and follow it from top to bottom. Every part is self-con
 
 | Your repo | Follow |
 |---|---|
-| .NET backend **and** an npm frontend in the same repo (e.g. EventsHub with `src/` and `web/`) | **Part 1** |
+| .NET backend **and** an npm frontend in the same repo (e.g. WebService with `src/` and `web/`) | **Part 1** |
 | Only .NET (a `.sln` / `.slnx`, no `package.json`) | **Part 2** |
 | Only npm, with `package.json` in the repo root | **Part 3** |
 | Only npm, with `package.json` in a subfolder (e.g. `frontend/`) | **Part 4** |
 
 ## Where to run the commands (read this once)
 
-- **Repo root** = the folder that contains the `.git` folder and, in .NET repos, the `.sln` / `.slnx` file. In EventsHub this is the folder with `EventsHub.slnx`.
+- **Repo root** = the folder that contains the `.git` folder and, in .NET repos, the `.sln` / `.slnx` file. In WebService this is the folder with `WebService.slnx`.
 - Git hooks belong to the repository, not to one project. Git has **one** `core.hooksPath` setting per repo and runs hooks from the repo root.
 - So, unless a step says otherwise, **run every command from the repo root**. Steps that must run somewhere else (for example inside `web/`) say so in a **Run from:** line.
 - All commands are written for **PowerShell**. Hook files are plain text: edit them with a code editor and keep **LF** line endings (not CRLF).
@@ -24,22 +24,22 @@ Pick **one** part below and follow it from top to bottom. Every part is self-con
 
 ---
 
-# Part 1: .NET + npm in the same repo (e.g. EventsHub)
+# Part 1: .NET + npm in the same repo (e.g. WebService)
 
 Use this when one repository holds both a .NET solution and an npm project.
 
-**Run from:** the **repo root** (the folder with `EventsHub.slnx` and `.git`), except where a step says `web/`.
+**Run from:** the **repo root** (the folder with `WebService.slnx` and `.git`), except where a step says `web/`.
 
 Example layout:
 
 ```
-EventsHub/                  <- repo root: run commands here
+WebService/                  <- repo root: run commands here
 ├── .git
 ├── .config/                <- dotnet-tools.json lives here
-├── EventsHub.slnx
+├── WebService.slnx
 ├── src/
-│   ├── EventsHub.Api/
-│   ├── EventsHub.Application/
+│   ├── WebService.Api/
+│   ├── WebService.Application/
 │   └── ...
 ├── tests/
 └── web/                    <- package.json (React/Vite) lives here
@@ -87,12 +87,12 @@ The last command should print `.husky`.
 **Run from:** the repo root.
 
 ```powershell
-dotnet husky attach src/EventsHub.Api/EventsHub.Api.csproj
+dotnet husky attach src/WebService.Api/WebService.Api.csproj
 ```
 
 This adds an MSBuild `Husky` target to the `.csproj`. It runs after NuGet restore (on `dotnet restore` / `dotnet build`), runs `dotnet tool restore` and `dotnet husky install`, and is skipped when the `HUSKY` environment variable is `0`.
 
-It also sets a `HuskyRoot` property: the relative path from the project folder to the repo root. The default `../../` is correct for a project directly under `src/`, such as `src/EventsHub.Api/`. If your `.csproj` sits at a different depth, open it and adjust `HuskyRoot` (keep the trailing slash).
+It also sets a `HuskyRoot` property: the relative path from the project folder to the repo root. The default `../../` is correct for a project directly under `src/`, such as `src/WebService.Api/`. If your `.csproj` sits at a different depth, open it and adjust `HuskyRoot` (keep the trailing slash).
 
 ## Step 5: Install lint-staged (and optionally Prettier) in the web project
 
@@ -104,6 +104,8 @@ npm install --save-dev lint-staged
 ```
 
 Add a `lint-staged` section to `web/package.json`. Only list tools that are **installed in that project**: a command that isn't installed makes the hook fail with "'prettier' is not recognized". The version below uses only `eslint`; the optional Prettier section right after it shows how to add Prettier.
+
+Copy the next json to the botton of the `web/package.json` file
 
 ```json
 "lint-staged": {
@@ -119,14 +121,14 @@ Add a `lint-staged` section to `web/package.json`. Only list tools that are **in
    ```powershell
    npm install --save-dev prettier
    ```
-2. Create `web/.prettierrc`. Pick options that match your **current** code style, otherwise Prettier rewrites every file it touches. The Vite React-TS template uses no semicolons and single quotes, so this is a likely match, but check your files:
+2. Create `web/.prettierrc`. Pick options that match your **current** code style, otherwise Prettier rewrites every file it touches. The Vite React-TS template uses no semicolons and single quotes, so this is a likely match, but check your files. Copy the next json to the file created:
    ```json
    {
      "semi": false,
      "singleQuote": true
    }
    ```
-3. Create `web/.prettierignore` so generated files are skipped:
+3. Create `web/.prettierignore` so generated files are skipped. Copy the next text to the file created:
    ```
    dist
    node_modules
@@ -280,7 +282,7 @@ It should print `.husky`. If it prints something ending in `/_`, npm Husky overw
 **Run from:** the repo root.
 
 ```powershell
-git add .husky .config src/EventsHub.Api/EventsHub.Api.csproj web/package.json web/package-lock.json web/.prettierrc web/.prettierignore web/eslint.config.js
+git add .husky .config src/WebService.Api/WebService.Api.csproj web/package.json web/package-lock.json web/.prettierrc web/.prettierignore web/eslint.config.js
 git commit -m "chore: add husky git hooks"
 ```
 
