@@ -4,16 +4,12 @@
   "tools": {
     "nswag.consolecore": {
       "version": "14.7.1",
-      "commands": [
-        "nswag"
-      ],
+      "commands": ["nswag"],
       "rollForward": false
     },
     "husky": {
       "version": "0.9.1",
-      "commands": [
-        "husky"
-      ],
+      "commands": ["husky"],
       "rollForward": false
     }
   }
