@@ -23,7 +23,7 @@ export default function NavBar({ openForm }: Props) {
                             <MenuItem sx={{ fontSize: "1.2rem", textTransform: "uppercase" }}>About</MenuItem>
                             <MenuItem sx={{ fontSize: "1.2rem", textTransform: "uppercase" }}>Contact</MenuItem>
                         </MenuList>
-                        <Button onClick={openForm} size="large" variant="contained" color="warning">CreateEvent</Button>
+                        <Button onClick={openForm} size="large" variant="contained" color="warning">Create Event</Button>
                     </Toolbar>
                 </Container>
             </AppBar>
