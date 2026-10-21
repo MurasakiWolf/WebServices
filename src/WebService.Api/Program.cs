@@ -1,5 +1,8 @@
-using Microsoft.EntityFrameworkCore;
 using WebService.Persistence;
+using Microsoft.EntityFrameworkCore;
+using WebService.Application.Events.Queries;
+using WebService.Application.Core;
+using WebService.Application.Core.Mapping;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,10 +12,19 @@ builder.Services.AddDbContext<AppDbContext>(opt =>
 {
     opt.UseSqlite(builder.Configuration.GetConnectionString("SqliteConnection"));
 });
+builder.Services.AddCors();
+builder.Services.AddMediatR(opt =>
+opt.RegisterServicesFromAssemblyContaining<GetEventList.Handler>()
+);
+builder.Services.AddMapper(typeof(MappingProfiles).Assembly);
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
+app.UseCors(opt => opt
+.AllowAnyHeader()
+.AllowAnyMethod()
+.WithOrigins("http://localhost:3000", "https://localhost:3000"));
 if (app.Environment.IsDevelopment()) { }
 
 using var scope = app.Services.CreateScope();

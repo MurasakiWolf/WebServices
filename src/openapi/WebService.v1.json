@@ -13,9 +13,7 @@
   "paths": {
     "/api/v1/Events": {
       "get": {
-        "tags": [
-          "Events"
-        ],
+        "tags": ["Events"],
         "operationId": "Events_GetEvents",
         "responses": {
           "200": {
@@ -36,9 +34,7 @@
     },
     "/api/v1/Events/{id}": {
       "get": {
-        "tags": [
-          "Events"
-        ],
+        "tags": ["Events"],
         "operationId": "Events_GetEventDetail",
         "parameters": [
           {
@@ -67,9 +63,7 @@
     },
     "/api/v1/WeatherForecast": {
       "get": {
-        "tags": [
-          "WeatherForecast"
-        ],
+        "tags": ["WeatherForecast"],
         "operationId": "WeatherForecast_Get",
         "responses": {
           "200": {

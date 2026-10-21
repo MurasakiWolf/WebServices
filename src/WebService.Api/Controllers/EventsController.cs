@@ -1,25 +1,53 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using WebService.Persistence;
 using WebService.Domain;
+using MediatR;
+using WebService.Application.Events.Queries;
+using WebService.Application.Events.Commands;
+using System.ComponentModel;
 
 namespace WebService.Api.Controllers;
 
-public class EventsController(AppDbContext context) : BaseWebServiceController
+public class EventsController : WebServiceBaseController
 {
     [HttpGet]
-    public async Task<ActionResult<IReadOnlyList<Event>>> GetEventsAsync()
+    [ProducesResponseType(typeof(IReadOnlyList<Event>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<IReadOnlyList<Event>>> GetEventsAsync(CancellationToken cancellationToken)
     {
-        return await context.Events.ToListAsync();
+        return await Mediator.Send(new GetEventList.Query(), cancellationToken);
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<Event>> GetEventDetail(string id)
+    [ProducesResponseType(typeof(Event), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(Event), StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<Event>> GetEventDetailAsync(string id)
     {
-        var result = await context.Events.FindAsync(id);
+        return await Mediator.Send(new GetEventDetails.Query { Id = id });
+    }
 
-        if (result == null) return NotFound("The event was not found");
+    [HttpPost]
+    [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<string>> CreateEventAsync(Event @event)
+    {
+        return await Mediator.Send(new CreateEvent.Command { Event = @event });
+    }
 
-        return result;
+    [HttpPut]
+    [ProducesResponseType(typeof(void), StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
+    public async Task<ActionResult> EditEventAsync(Event @event)
+    {
+        await Mediator.Send(new EditEvent.Command { Event = @event });
+        return NoContent();
+    }
+
+    [HttpDelete]
+    [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
+    public async Task<ActionResult> DeleteEvent(string id)
+    {
+        await Mediator.Send(new DeleteEvent.Command { Id = id });
+        return Ok();
     }
 }
