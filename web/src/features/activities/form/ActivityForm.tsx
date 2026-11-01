@@ -52,9 +52,13 @@ export default function ActivityForm({ activity, closeForm }: Props) {
         ></TextField>
         <TextField
           name="date"
-          label=""
-          value={activity?.date}
+          label="Date"
           type="date"
+          defaultValue={
+            activity?.date
+              ? new Date(activity.date).toISOString().split('T')[0]
+              : new Date().toISOString().split('T')[0]
+          }
         ></TextField>
         <TextField name="city" label="City" value={activity?.city}></TextField>
         <TextField
