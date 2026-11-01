@@ -1,13 +1,9 @@
 import { Box, Button, Paper, TextField, Typography } from '@mui/material'
 import { useActivities } from '../../../lib/hooks/useActivities'
 
-type Props = {
-  activity?: Activity
-  closeForm: () => void
-}
-
-export default function ActivityForm({ activity, closeForm }: Props) {
+export default function ActivityForm() {
   const { updateActivity, createActivity } = useActivities()
+  const activity = {} as Activity
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -24,8 +20,6 @@ export default function ActivityForm({ activity, closeForm }: Props) {
     } else {
       await createActivity.mutateAsync(data as unknown as Activity)
     }
-
-    closeForm()
   }
   return (
     <Paper sx={{ borderRadius: 3, padding: 3 }}>
@@ -71,9 +65,7 @@ export default function ActivityForm({ activity, closeForm }: Props) {
           value={activity?.venue}
         ></TextField>
         <Box sx={{ display: 'flex', justifyContent: 'end', gap: 3 }}>
-          <Button onClick={closeForm} color="inherit">
-            Cancel
-          </Button>
+          <Button color="inherit">Cancel</Button>
           <Button
             color="success"
             variant="contained"
