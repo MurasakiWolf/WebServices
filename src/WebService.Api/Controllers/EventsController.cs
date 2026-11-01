@@ -1,9 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
-using WebService.Domain;
-using MediatR;
-using WebService.Application.Events.Queries;
 using WebService.Application.Events.Commands;
-using System.ComponentModel;
+using WebService.Application.Events.Queries;
+using WebService.Domain;
 
 namespace WebService.Api.Controllers;
 
@@ -45,7 +43,7 @@ public class EventsController : WebServiceBaseController
     [HttpDelete]
     [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(void), StatusCodes.Status404NotFound)]
-    public async Task<ActionResult> DeleteEvent(string id)
+    public async Task<ActionResult> DeleteEventAsync(string id)
     {
         await Mediator.Send(new DeleteEvent.Command { Id = id });
         return Ok();
