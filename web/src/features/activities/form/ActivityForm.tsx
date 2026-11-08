@@ -34,7 +34,7 @@ export default function ActivityForm() {
   return (
     <Paper sx={{ borderRadius: 3, padding: 3 }}>
       <Typography variant="h5" gutterBottom color="primary">
-        Create activity
+        {activity ? 'Manage activity' : 'Create activity'}
       </Typography>
       <Box
         component="form"
@@ -44,7 +44,7 @@ export default function ActivityForm() {
         <TextField
           name="title"
           label="Title"
-          value={activity?.title}
+          defaultValue={activity?.title}
         ></TextField>
         <TextField
           name="description"
@@ -79,7 +79,7 @@ export default function ActivityForm() {
           <Button
             color="success"
             variant="contained"
-            type="submited"
+            type="submit"
             loading={updateActivity.isPending || createActivity.isPending}
           >
             Submit
